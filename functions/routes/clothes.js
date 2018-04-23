@@ -6,34 +6,24 @@ admin.initializeApp();
 const db = admin.firestore();
 
 function getMultiple(db) {
-    db.collection('clothes').get()
+    return db.collection('clothes').get()
         .then(snapshot => {
-            console.error('yeaah');
-            console.error('omg : ' + typeof snapshot);
-            console.error(snapshot);
             return snapshot;
         })
         .catch(err => {
-            console.error('naaah');
             throw err;
         });
 }
 
 
 router.get('/', (req, res, next) => {
-    let r;
 
-    try {
-        let temp = getMultiple(db);
-        r = temp;
-        console.error('successssss');
-    }
-    catch (err) {
-        r = 'AH.';
-        console.error('failllll');
-    }
-
-    res.send(r);
+    let prom = getMultiple(db);
+    prom.then((v) => {
+        return res.send(v.docs);
+    }).catch((e) => {
+        return res.send(e);
+    });
 });
 
 module.exports = router;
