@@ -1,19 +1,25 @@
 // required libraries
+const admin = require('firebase-admin');
 const functions = require('firebase-functions');
-
 const express = require('express');
+const cors = require('cors');
 
 // initialization
+admin.initializeApp();
 const app = express();
 
 // routes
 const index = require('./routes/index');
 const authenticate = require('./routes/authenticate');
 const clothes = require('./routes/clothes');
+const log = require('./routes/log');
+
+app.use(cors({ origin: true }));
 // using routes
 app.use('/', index);
 app.use('/authenticate', authenticate);
 app.use('/clothes', clothes);
+app.use('/log', log);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
