@@ -13,7 +13,7 @@ const index = require('./routes/index');
 const authenticate = require('./routes/authenticate');
 const collections = require('./routes/collections');
 const sets = require('./routes/sets');
-const log = require('./routes/log');
+const images = require('./routes/images');
 
 app.use(cors({ origin: true }));
 // using routes
@@ -21,7 +21,7 @@ app.use('/', index);
 app.use('/authenticate', authenticate);
 app.use('/collections', collections);
 app.use('/sets', sets);
-app.use('/log', log);
+app.use('/images', images);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
