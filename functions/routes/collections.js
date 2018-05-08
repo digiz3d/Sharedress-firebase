@@ -21,24 +21,24 @@ router.get('/', (req, res) => {
         });
 });
 
-router.post('/:name', (req, res) => {
-    if (req.params.name.trim() === "") {
-        return res.send("empty collection name...")
+router.post('/', (req, res) => {
+    if (!req.body.name || req.body.name.trim() === "") {
+        return res.send("empty collection name...");
     }
 
-    collections.doc(req.params.name).get()
+    collections.doc(req.body.name).get()
         .then(doc => {
             if (doc.exists) {
                 return res.send('le document existe déjà et il vaut : ' + JSON.stringify(doc.data()));
             }
 
-            collections.doc(req.params.name).set({
-                name: req.params.name,
+            collections.doc(req.body.name).set({
+                name: req.body.name,
                 creationTimestamp: Date.now(),
                 sets: []
             })
                 .then(ref => {
-                    res.send('Successfully added ' + req.params.name);
+                    res.send('Successfully added ' + req.body.name);
                 })
                 .catch(e => {
                     res.send('error : ' + e);
@@ -51,13 +51,13 @@ router.post('/:name', (req, res) => {
 
 });
 
-router.patch('/:name/:set', (req, res) => {
+router.patch('/:name', (req, res) => {
     if (req.params.name.trim() === "") {
-        return res.send("Empty Collection ID...")
+        return res.send("Empty Collection ID...");
     }
 
-    if (req.params.set.trim() === "") {
-        return res.send("Empty Set ID...")
+    if (!req.body.set || req.body.set.trim() === "") {
+        return res.send("Empty Set ID...");
     }
 
     collections.doc(req.params.name).get()
@@ -68,7 +68,7 @@ router.patch('/:name/:set', (req, res) => {
 
             const oldData = collectionDocument.data();
 
-            sets.doc(req.params.set).get()
+            sets.doc(req.body.set).get()
                 .then(setDocument => {
                     if (!setDocument.exists) {
                         return res.send('Specified set doesn\'t exist...')

@@ -18,14 +18,21 @@ router.get('/', (req, res) => {
         .catch(e => res.send(e));
 });
 
-router.post('/:refImage1/:refImage2',(req, res) => {
+router.post('/',(req, res) => {
+    if (!req.body.left || req.body.left.trim() === '') {
+        return res.send("Empty Image 1 ID...");
+    }
+    if (!req.body.right || req.body.right.trim() === '') {
+        return res.send("Empty Image 2 ID...");
+    }
+
     sets.add({
-        img1: req.params.refImage1,
-        img2: req.params.refImage2
+        left: req.body.left,
+        right: req.body.right
     }).then(ref => {
-        return res.send("successfully created "+ref.id);
+        return res.send('successfully created '+ref.id);
     }).catch(e => {
-        return res.send("error "+e);
+        return res.send('error '+e);
     })
 });
 

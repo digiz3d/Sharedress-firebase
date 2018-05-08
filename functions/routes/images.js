@@ -27,10 +27,10 @@ router.post('/', (req, res) => {
     if (!req.body.url || req.body.url.trim() === "") {
         return res.send('The URL is empty');
     }
-    /*
+    
     images.add({
-        name: req.params.name,
-        url: req.params.url
+        name: req.body.name,
+        url: req.body.url
     })
     .then(ref => {
         res.send('File received');
@@ -38,13 +38,16 @@ router.post('/', (req, res) => {
     .catch(e => {
         res.send('Error adding image');
     });
-    */
+    
+
+    /*
     res.send(JSON.stringify({
         url: req.url,
         query: req.query,
         baseUrl: req.baseUrl,
         body: req.body,
     }));
+    */
 });
 
 module.exports = router;
