@@ -58,56 +58,57 @@ router.post('/', (req, res) => {
 
 
 
-router.patch('/:name', (req, res) => {
-    if (req.params.name.trim() === "") {
-        return res.send("Empty Collection ID...");
-    }
+router.patch('/:collectionId', (req, res) => {
 
-    if (!req.body.set || req.body.set.trim() === "") {
-        return res.send("Empty Set ID...");
-    }
+    let oldData;
+    let oldArray;
 
-    collections.doc(req.params.name).get()
+    new Promise((resolve, reject) => {
+        if (req.params.collectionId.trim() === "") {
+            return reject(new Error('Empty collection ID.'));
+        }
+
+        if (!req.body.set || req.body.set.trim() === "") {
+            return reject(new Error('Empty set ID.'));
+        }
+
+        return resolve();
+    })
+        .then(() => {
+            return collections.doc(req.params.collectionId).get()
+        })
         .then(collectionDocument => {
             if (!collectionDocument.exists) {
-                return res.send("Specified collection does not exist...")
+                throw new Error('Specified collection does not exist...');
             }
 
-            const oldData = collectionDocument.data();
+            oldData = collectionDocument.data();
+            return true;
+        })
+        .then(() => {
+            return sets.doc(req.body.set).get();
+        })
+        .then(setDocument => {
+            if (!setDocument.exists) {
+                throw new Error('Specified set doesn\'t exist...');
+            }
 
-            sets.doc(req.body.set).get()
-                .then(setDocument => {
-                    if (!setDocument.exists) {
-                        return res.send('Specified set doesn\'t exist...')
-                    }
-
-                    const oldArray = oldData.sets || [];
-                    collections.doc(req.params.name).set({
-                        updateTimestamp: Date.now(),
-                        sets: oldArray.concat([{
-                            order: oldArray.length,
-                            ref: setDocument.ref
-                        }]),
-                    }, { merge: true })
-                        .then(ref => {
-                            res.send('Successfully added ' + req.params.name);
-                            return true;
-                        })
-                        .catch(err => {
-                            console.log('Error adding set to collection', err);
-                            res.send('Error adding set to collection');
-                        });
-                    return true;
-                })
-                .catch(err => {
-                    console.log('Error getting set', err);
-                    res.send('Error getting set');
-                });
+            oldArray = oldData.sets || [];
+            return collections.doc(req.params.collectionId).set({
+                updateTimestamp: Date.now(),
+                sets: oldArray.concat([{
+                    order: oldArray.length,
+                    ref: setDocument.ref
+                }]),
+            }, { merge: true });
+        })
+        .then(ref => {
+            res.send('Successfully added ' + req.params.collectionId);
             return true;
         })
         .catch(err => {
-            console.log('Error getting collection', err);
-            res.send('Error getting collection.');
+            console.log('Error adding set to collection', err.message);
+            res.send('Error adding set to collection.');
         });
     return true;
 });
