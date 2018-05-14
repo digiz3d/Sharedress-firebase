@@ -7,13 +7,32 @@ const collections = db.collection('collections');
 const sets = db.collection('sets');
 
 router.get('/', (req, res) => {
-    let docs = [];
+    let docs = {};
 
     collections.get()
         .then(snapshot => {
+            let promises = [];
+
             snapshot.forEach(doc => {
-                docs.push(doc.data());
+                docs[doc.id] = doc.data();
+                docs[doc.id].id = doc.id;
+                docs[doc.id].sets.map((elem) => {
+                    promises.push(elem.ref.get())
+                });
             });
+            return Promise.all(promises);
+        })
+        .then((snapshotArray) => {
+            
+            console.log(snapshotArray);
+            snapshotArray.forEach(snap => {
+                console.info(snap.data());
+                console.info(snap.id);
+            });
+            
+         
+            //console.log(results[0].data().id);
+
             return res.send(docs);
         })
         .catch(e => {
