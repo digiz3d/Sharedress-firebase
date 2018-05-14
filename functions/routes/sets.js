@@ -15,59 +15,90 @@ router.get('/', (req, res) => {
             return res.send(docs);
         })
         .catch(e => res.send(e));
-    return;
+    return true;
 });
 
 router.post('/', (req, res) => {
-    if (!req.body.left || req.body.left.trim() === '') {
-        return res.send('Empty Image 1 ID...');
-    }
-    if (!req.body.right || req.body.right.trim() === '') {
-        return res.send('Empty Image 2 ID...');
-    }
-
-    let message = "";
-    let leftRef;
-    let rightRef;
-
-    Promise.all([
-        images.doc(req.body.left).get().then(leftImage => {
+    new Promise((resolve, reject) => {
+        if (!req.body.left || req.body.left.trim() === '') {
+            return reject(new Error('Empty image 1 ID.'));
+        }
+        if (!req.body.right || req.body.right.trim() === '') {
+            return reject(new Error('Empty Image 2 ID...'));
+        }
+        return resolve();
+    })
+        .then(() => {
+            return Promise.all([
+                images.doc(req.body.left).get(),
+                images.doc(req.body.right).get()
+            ]);
+        })
+        .then(images => {
+            leftImage = images[0];
+            rightImage = images[1];
             if (!leftImage.exists) {
-                return Promise.reject(new Error('Image 1 does not exist'));
+                throw new Error('Image 1 does not exist');
             }
-            return leftImage.ref;
-        }).catch(e => {
-            message += 'Failed getting Image 1' + e;
-            return Promise.reject(new Error('Failed getting Image 1'));
-        }),
-        images.doc(req.body.right).get().then(rightImage => {
             if (!rightImage.exists) {
-                return Promise.reject(new Error('Image 2 does not exist'));
+                throw new Error('Image 2 does not exist');
             }
-            return rightImage.ref;
+            
+            return sets.add({
+                left: leftImage.ref,
+                right: rightImage.ref
+            });
+        }).then(ref => {
+            return res.send('Set successfully created ' + ref.id);
         }).catch(e => {
-            message += 'Failed getting Image 2 ' + e;
-            return Promise.reject(new Error('Failed getting Image 2'));
-        }),
-    ]).then(images => {
-        sets.add({
-            left: images[0],
-            right: images[1]
+            console.log('Error adding the set : '+ e.message);
+            return res.send('Error adding the set');
+        });
+    return true;
+});
+
+/*
+router.post('/', (req, res) => {
+    new Promise((resolve, reject) => {
+        if (!req.body.left || req.body.left.trim() === '') {
+            return reject(new Error('Empty image 1 ID.'));
+        }
+        if (!req.body.right || req.body.right.trim() === '') {
+            return reject(new Error('Empty Image 2 ID...'));
+        }
+        return resolve();
+    })
+        .then(() => {
+            return Promise.all([
+                images.doc(req.body.left).get().then(leftImage => {
+                    if (!leftImage.exists) {
+                        return Promise.reject(new Error('Image 1 does not exist'));
+                    }
+                    return Promise.resolve(leftImage.ref);
+                }).catch(e => {
+                    return Promise.reject(new Error('Failed getting Image 1'));
+                }),
+                images.doc(req.body.right).get().then(rightImage => {
+                    if (!rightImage.exists) {
+                        return Promise.reject(new Error('Image 2 does not exist'));
+                    }
+                    return Promise.resolve(rightImage.ref);
+                }).catch(e => {
+                    return Promise.reject(new Error('Failed getting Image 2'));
+                }),
+            ]);
+        })
+        .then(images => {
+            return sets.add({
+                left: images[0],
+                right: images[1]
+            });
         }).then(ref => {
             return res.send('Set successfully created ' + ref.id);
         }).catch(e => {
             return res.send('Error adding the set : ' + e);
         });
-
-        /*
-        console.warn(message);
-        res.send(JSON.stringify(images[0]));
-        */
-        return true;
-    }).catch((e) => {
-        return res.send('One or more image doesnt exist ' + e);
-    });
     return true;
 });
-
+*/
 module.exports = router;

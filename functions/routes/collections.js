@@ -75,7 +75,7 @@ router.patch('/:collectionId', (req, res) => {
         return resolve();
     })
         .then(() => {
-            return collections.doc(req.params.collectionId).get()
+            return collections.doc(req.params.collectionId).get();
         })
         .then(collectionDocument => {
             if (!collectionDocument.exists) {
