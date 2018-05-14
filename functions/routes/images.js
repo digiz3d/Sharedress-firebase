@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
                 docs.push(doc.data());
             });
             res.send(docs);
-            return;
+            return true;
         })
         .catch(e => {
             res.send(e);
@@ -23,34 +23,33 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    if (!req.body.name || req.body.name.trim() === "") {
-        return res.send('The name is empty');
-    }
-    if (!req.body.url || req.body.url.trim() === "") {
-        return res.send('The URL is empty');
-    }
 
-    images.add({
-        name: req.body.name,
-        url: req.body.url
+    new Promise((resolve, reject) => {
+        if (!req.body.name || req.body.name.trim() === "") {
+            return reject(new Error('The name is empty.'));
+        }
+
+        if (!req.body.url || req.body.url.trim() === "") {
+            return reject(new Error('The URL is empty.'));
+        }
+
+
+        return resolve();
     })
+        .then(() => {
+            return images.add({
+                name: req.body.name,
+                url: req.body.url
+            });
+        })
         .then(ref => {
             res.send('File received');
-            return;
+            return true;
         })
         .catch(e => {
-            res.send('Error adding image');
+            console.log('Error adding image : ' + e.message)
+            res.send('Error adding image.');
         });
-
-
-    /*
-    res.send(JSON.stringify({
-        url: req.url,
-        query: req.query,
-        baseUrl: req.baseUrl,
-        body: req.body,
-    }));
-    */
     return true;
 });
 
