@@ -14,42 +14,49 @@ router.get('/', (req, res) => {
             snapshot.forEach(doc => {
                 docs.push(doc.data());
             });
-            res.send(docs);
+            return res.send(docs);
         })
         .catch(e => {
+            console.log('Error getting collection', e.message);
             res.send(e);
         });
+    return;
 });
 
 router.post('/', (req, res) => {
-    if (!req.body.name || req.body.name.trim() === "") {
-        return res.send("empty collection name...");
-    }
-
-    collections.doc(req.body.name).get()
+    new Promise((resolve, reject) => {
+        if (!req.body.name || req.body.name.trim() === "") {
+            reject(Error("empty collection name..."));
+        }
+        resolve();
+    })
+        .then(() => {
+            return collections.doc(req.body.name).get()
+        })
         .then(doc => {
             if (doc.exists) {
-                return res.send('le document existe déjà et il vaut : ' + JSON.stringify(doc.data()));
+                throw new Error('Le document existe déjà et il vaut : ' + JSON.stringify(doc.data()))
             }
-
-            collections.doc(req.body.name).set({
+            return true;
+        })
+        .then(() => {
+            return collections.doc(req.body.name).set({
                 name: req.body.name,
                 creationTimestamp: Date.now(),
                 sets: []
-            })
-                .then(ref => {
-                    res.send('Successfully added ' + req.body.name);
-                })
-                .catch(e => {
-                    res.send('error : ' + e);
-                });
+            });
         })
-        .catch(err => {
-            console.log('Error getting document', err);
-            res.send('Error getting document : ' + err);
+        .then(ref => {
+            return res.send('Successfully added ' + req.body.name);
+        })
+        .catch(e => {
+            console.log('Error getting collection : ', e.message);
+            res.send('Error posting a new document.');
         });
-
+    return;
 });
+
+
 
 router.patch('/:name', (req, res) => {
     if (req.params.name.trim() === "") {
@@ -100,6 +107,7 @@ router.patch('/:name', (req, res) => {
             console.log('Error getting collection', err);
             res.send('Error getting collection.');
         });
+    return;
 });
 
 module.exports = router;
