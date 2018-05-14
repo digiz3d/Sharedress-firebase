@@ -11,12 +11,11 @@ router.get('/', (req, res) => {
 
     sets.get()
         .then(snapshot => {
-            snapshot.forEach(doc => {
-                docs.push(doc.data());
-            });
-            res.send(docs);
+            snapshot.forEach(doc => docs.push(doc.data()));
+            return res.send(docs);
         })
         .catch(e => res.send(e));
+    return;
 });
 
 router.post('/', (req, res) => {
@@ -64,9 +63,11 @@ router.post('/', (req, res) => {
         console.warn(message);
         res.send(JSON.stringify(images[0]));
         */
+        return true;
     }).catch((e) => {
         return res.send('One or more image doesnt exist ' + e);
     });
+    return true;
 });
 
 module.exports = router;

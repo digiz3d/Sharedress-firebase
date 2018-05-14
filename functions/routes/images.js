@@ -14,10 +14,12 @@ router.get('/', (req, res) => {
                 docs.push(doc.data());
             });
             res.send(docs);
+            return;
         })
         .catch(e => {
             res.send(e);
         });
+    return true;
 });
 
 router.post('/', (req, res) => {
@@ -27,18 +29,19 @@ router.post('/', (req, res) => {
     if (!req.body.url || req.body.url.trim() === "") {
         return res.send('The URL is empty');
     }
-    
+
     images.add({
         name: req.body.name,
         url: req.body.url
     })
-    .then(ref => {
-        res.send('File received');
-    })
-    .catch(e => {
-        res.send('Error adding image');
-    });
-    
+        .then(ref => {
+            res.send('File received');
+            return;
+        })
+        .catch(e => {
+            res.send('Error adding image');
+        });
+
 
     /*
     res.send(JSON.stringify({
@@ -48,6 +51,7 @@ router.post('/', (req, res) => {
         body: req.body,
     }));
     */
+    return true;
 });
 
 module.exports = router;

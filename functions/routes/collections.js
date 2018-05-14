@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
             console.log('Error getting collection', e.message);
             res.send(e);
         });
-    return;
+    return true;
 });
 
 router.post('/', (req, res) => {
@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
             if (doc.exists) {
                 throw new Error('Le document existe déjà et il vaut : ' + JSON.stringify(doc.data()))
             }
-            return true;
+            return;
         })
         .then(() => {
             return collections.doc(req.body.name).set({
@@ -53,7 +53,7 @@ router.post('/', (req, res) => {
             console.log('Error getting collection : ', e.message);
             res.send('Error posting a new document.');
         });
-    return;
+    return true;
 });
 
 
@@ -91,23 +91,25 @@ router.patch('/:name', (req, res) => {
                     }, { merge: true })
                         .then(ref => {
                             res.send('Successfully added ' + req.params.name);
+                            return true;
                         })
                         .catch(err => {
                             console.log('Error adding set to collection', err);
                             res.send('Error adding set to collection');
                         });
-
+                    return true;
                 })
                 .catch(err => {
                     console.log('Error getting set', err);
                     res.send('Error getting set');
                 });
+            return true;
         })
         .catch(err => {
             console.log('Error getting collection', err);
             res.send('Error getting collection.');
         });
-    return;
+    return true;
 });
 
 module.exports = router;
