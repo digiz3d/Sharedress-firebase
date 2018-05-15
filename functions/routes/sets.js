@@ -14,8 +14,8 @@ router.get('/', (req, res) => {
             documents.forEach(doc => {
                 docs[doc.id] = doc.data();
                 docs[doc.id].id = doc.id;
-                docs[doc.id].left = docs[doc.id].left.ref.id;
-                docs[doc.id].right = docs[doc.id].right.ref.id;
+                docs[doc.id].leftImage = docs[doc.id].leftImage.ref.id;
+                docs[doc.id].rightImage = docs[doc.id].rightImage.ref.id;
             });
 
             return res.send(docs);
@@ -64,15 +64,15 @@ router.post('/', (req, res) => {
             if (!rightImage.exists) {
                 throw new Error('Image 2 does not exist');
             }
-            
+
             return sets.add({
-                left: leftImage.ref,
-                right: rightImage.ref
+                leftImage: leftImage.ref,
+                rightImage: rightImage.ref
             });
         }).then(ref => {
             return res.send('Set successfully created ' + ref.id);
         }).catch(e => {
-            console.log('Error adding the set : '+ e.message);
+            console.log('Error adding the set : ' + e.message);
             return res.send('Error adding the set');
         });
     return true;
