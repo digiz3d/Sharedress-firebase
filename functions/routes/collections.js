@@ -10,28 +10,12 @@ router.get('/', (req, res) => {
     let docs = {};
 
     collections.get()
-        .then(snapshot => {
-            let promises = [];
-
-            snapshot.forEach(doc => {
+        .then(documents => {
+            documents.forEach(doc => {
                 docs[doc.id] = doc.data();
                 docs[doc.id].id = doc.id;
-                docs[doc.id].sets.map((elem) => {
-                    promises.push(elem.ref.get())
-                });
+                docs[doc.id].sets = docs[doc.id].sets.map((elem) => elem.ref.id);
             });
-            return Promise.all(promises);
-        })
-        .then((snapshotArray) => {
-            
-            console.log(snapshotArray);
-            snapshotArray.forEach(snap => {
-                console.info(snap.data());
-                console.info(snap.id);
-            });
-            
-         
-            //console.log(results[0].data().id);
 
             return res.send(docs);
         })

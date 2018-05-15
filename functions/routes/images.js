@@ -6,18 +6,20 @@ const db = admin.firestore();
 const images = db.collection('images');
 
 router.get('/', (req, res) => {
-    let docs = [];
+    let docs = {};
 
     images.get()
-        .then(snapshot => {
-            snapshot.forEach(doc => {
-                docs.push(doc.data());
+        .then(documents => {
+            documents.forEach(doc => {
+                docs[doc.id] = doc.data();
+                docs[doc.id].id = doc.id;
             });
-            res.send(docs);
-            return true;
+
+            return res.send(docs);
         })
         .catch(e => {
-            res.send(e);
+            console.log('Error getting images', e.message);
+            res.send('Error getting images');
         });
     return true;
 });

@@ -7,6 +7,27 @@ const images = db.collection('images');
 const sets = db.collection('sets');
 
 router.get('/', (req, res) => {
+    let docs = {};
+
+    sets.get()
+        .then(documents => {
+            documents.forEach(doc => {
+                docs[doc.id] = doc.data();
+                docs[doc.id].id = doc.id;
+                docs[doc.id].left = docs[doc.id].left.ref.id;
+                docs[doc.id].right = docs[doc.id].right.ref.id;
+            });
+
+            return res.send(docs);
+        })
+        .catch(e => {
+            console.log('Error getting collection', e.message);
+            res.send(e);
+        });
+    return true;
+});
+
+router.get('/', (req, res) => {
     let docs = [];
 
     sets.get()
