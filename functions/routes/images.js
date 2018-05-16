@@ -13,13 +13,17 @@ router.get('/', (req, res) => {
             documents.forEach(doc => {
                 docs[doc.id] = doc.data();
                 docs[doc.id].id = doc.id;
+                if (!docs[doc.id].url && docs[doc.id].storageId) {
+                    docs[doc.id].url = 'https://firebasestorage.googleapis.com/v0/b/sharedress-app.appspot.com/o/'
+                        + docs[doc.id].storageId
+                        + '?alt=media';
+                }
             });
-
             return res.send(docs);
         })
         .catch(e => {
             console.log('Error getting images', e.message);
-            res.send('Error getting images');
+            //res.send('Error getting images');
         });
     return true;
 });
@@ -41,7 +45,8 @@ router.post('/', (req, res) => {
         .then(() => {
             return images.add({
                 name: req.body.name,
-                url: req.body.url
+                url: req.body.url,
+                storageId: ''
             });
         })
         .then(ref => {

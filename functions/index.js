@@ -43,8 +43,20 @@ app.use((err, req, res, next) => {
 
 const api = functions.https.onRequest(app);
 
+
+const db = admin.firestore();
+const imagesCollection = db.collection('images');
+const st = functions.storage.object().onFinalize((img) => {
+    imagesCollection.add({
+        name: img.name,
+        url: '',
+        storageId : img.name
+    });
+});
+
 module.exports = {
-    api
+    api,
+    st
 }
 
 // // Create and Deploy Your First Cloud Functions
