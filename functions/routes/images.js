@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
                 docs[doc.id].id = doc.id;
                 if (!docs[doc.id].url && docs[doc.id].storageId) {
                     docs[doc.id].url = 'https://firebasestorage.googleapis.com/v0/b/sharedress-app.appspot.com/o/'
-                        + docs[doc.id].storageId
+                        + encodeURIComponent(docs[doc.id].storageId)
                         + '?alt=media';
                 }
             });

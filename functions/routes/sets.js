@@ -14,8 +14,8 @@ router.get('/', (req, res) => {
             documents.forEach(doc => {
                 docs[doc.id] = doc.data();
                 docs[doc.id].id = doc.id;
-                docs[doc.id].leftImage = docs[doc.id].leftImage.ref.id;
-                docs[doc.id].rightImage = docs[doc.id].rightImage.ref.id;
+                docs[doc.id].leftImage = docs[doc.id].leftImage ? docs[doc.id].leftImage.ref.id : '';
+                docs[doc.id].rightImage = docs[doc.id].rightImage ? docs[doc.id].rightImage.ref.id : '';
             });
 
             return res.send(docs);
