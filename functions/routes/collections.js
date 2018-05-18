@@ -9,7 +9,7 @@ const sets = db.collection('sets');
 router.get('/', (req, res) => {
     let docs = {};
 
-    collections.get()
+    collections.orderBy('creationTimestamp', 'desc').get()
         .then(documents => {
             documents.forEach(doc => {
                 docs[doc.id] = doc.data();

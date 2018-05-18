@@ -8,7 +8,7 @@ const images = db.collection('images');
 router.get('/', (req, res) => {
     let docs = {};
 
-    images.get()
+    images.orderBy('creationTimestamp', 'desc').get()
         .then(documents => {
             documents.forEach(doc => {
                 docs[doc.id] = doc.data();

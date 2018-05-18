@@ -9,11 +9,12 @@ const sets = db.collection('sets');
 router.get('/', (req, res) => {
     let docs = {};
 
-    sets.get()
+    sets.orderBy('creationTimestamp', 'desc').get()
         .then(documents => {
             documents.forEach(doc => {
                 docs[doc.id] = doc.data();
                 docs[doc.id].id = doc.id;
+                // convert references to id
                 docs[doc.id].leftImage = docs[doc.id].leftImage ? docs[doc.id].leftImage.ref.id : '';
                 docs[doc.id].rightImage = docs[doc.id].rightImage ? docs[doc.id].rightImage.ref.id : '';
             });
@@ -26,7 +27,7 @@ router.get('/', (req, res) => {
         });
     return true;
 });
-
+/*
 router.get('/', (req, res) => {
     let docs = [];
 
@@ -38,7 +39,7 @@ router.get('/', (req, res) => {
         .catch(e => res.send(e));
     return true;
 });
-
+*/
 router.post('/', (req, res) => {
     new Promise((resolve, reject) => {
         if (!req.body.left || req.body.left.trim() === '') {
@@ -71,7 +72,18 @@ router.post('/', (req, res) => {
                 creationTimestamp: Date.now()
             });
         }).then(ref => {
-            return res.send('Set successfully created ' + ref.id);
+            let docs = {};
+            ref.get().then(document => {
+                docs[document.id] = document.data();
+                docs[document.id].id = document.id;
+                docs[document.id].leftImage = docs[document.id].leftImage ? docs[document.id].leftImage.ref.id : '';
+                docs[document.id].rightImage = docs[document.id].rightImage ? docs[document.id].rightImage.ref.id : '';
+                return res.send(docs);
+            }).catch(err => {
+                console.warn(err);
+                return res.send(err.message);
+            });
+            return true;
         }).catch(e => {
             console.log('Error adding the set : ' + e.message);
             return res.send('Error adding the set');
