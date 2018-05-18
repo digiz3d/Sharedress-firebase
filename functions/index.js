@@ -15,7 +15,7 @@ const collections = require('./routes/collections');
 const sets = require('./routes/sets');
 const images = require('./routes/images');
 
-app.use(cors({ origin: true }));
+app.use(cors());
 // using routes
 app.use('/', index);
 app.use('/authenticate', authenticate);
