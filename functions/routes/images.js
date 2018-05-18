@@ -29,19 +29,24 @@ router.get('/', (req, res) => {
 });
 
 router.get('/last', (req, res) => {
-    let doc = {};
-    images.where('creationTimestamp', '>', 0).orderBy('creationTimestamp').limit(1).get()
+    let docs = {};
+    images
+        //.where('creationTimestamp', '>=', 0)
+        .orderBy('creationTimestamp', 'desc')
+        .limit(1)
+        .get()
         .then((snapshot) => {
-            snapshot.forEach(document => {
-                doc = document.data();
+            snapshot.forEach(doc => {
+                docs[doc.id] = doc.data();
+                docs[doc.id].id = doc.id;
             });
-            return true;
+            return res.send(docs);
         })
         .catch(err => {
             console.warn(err);
             return res.send(err.message);
         });
-    return res.send(doc);
+    return true;
 });
 
 router.post('/', (req, res) => {
