@@ -28,6 +28,22 @@ router.get('/', (req, res) => {
     return true;
 });
 
+router.get('/last', (req, res) => {
+    let doc = {};
+    images.where('creationTimestamp', '>', 0).orderBy('creationTimestamp').limit(1).get()
+        .then((snapshot) => {
+            snapshot.forEach(document => {
+                doc = document.data();
+            });
+            return true;
+        })
+        .catch(err => {
+            console.warn(err);
+            return res.send(err.message);
+        });
+    return res.send(doc);
+});
+
 router.post('/', (req, res) => {
 
     new Promise((resolve, reject) => {

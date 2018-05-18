@@ -46,18 +46,53 @@ const api = functions.https.onRequest(app);
 
 const db = admin.firestore();
 const imagesCollection = db.collection('images');
-const st = functions.storage.object().onFinalize((img) => {
+
+const onFileUpload = functions.storage.object().onFinalize((img) => {
+    console.info('adding : ' + img.name);
     imagesCollection.add({
         name: img.name,
         url: '',
-        storageId : img.name,
+        storageId: img.name,
         creationTimestamp: Date.now()
+    }).then(result => {
+        console.info('added : ' + result.id);
+        return true;
+    }).catch(err => {
+        console.info('failed to add the file');
+        console.info(err);
     });
+    return true;
+});
+
+const onFileDelete = functions.storage.object().onDelete((img) => {
+    imagesCollection.where('storageId', "==", img.name).get()
+        .then((snapshot) => {
+            console.info('starting to delete for storageId == '+ img.name);
+            snapshot.forEach((doc) => {
+                console.info('deleting : ' + doc.id);
+                doc.ref.delete()
+                    .then(r => {
+                        console.info('deleted the image');
+                        return true;
+                    })
+                    .catch(err => {
+                        console.info('failed to delete the image');
+                        console.info(err);
+                    });
+                return true;
+            });
+            return true;
+        })
+        .catch(err => {
+            console.warn(err);
+        });
+    return true;
 });
 
 module.exports = {
     api,
-    st
+    onFileUpload,
+    onFileDelete
 }
 
 // // Create and Deploy Your First Cloud Functions
