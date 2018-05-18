@@ -67,7 +67,8 @@ router.post('/', (req, res) => {
 
             return sets.add({
                 leftImage: leftImage.ref,
-                rightImage: rightImage.ref
+                rightImage: rightImage.ref,
+                creationTimestamp: Date.now()
             });
         }).then(ref => {
             return res.send('Set successfully created ' + ref.id);

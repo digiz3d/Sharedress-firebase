@@ -50,7 +50,8 @@ const st = functions.storage.object().onFinalize((img) => {
     imagesCollection.add({
         name: img.name,
         url: '',
-        storageId : img.name
+        storageId : img.name,
+        creationTimestamp: Date.now()
     });
 });
 

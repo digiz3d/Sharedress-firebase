@@ -46,7 +46,8 @@ router.post('/', (req, res) => {
             return images.add({
                 name: req.body.name,
                 url: req.body.url,
-                storageId: ''
+                storageId: '',
+                creationTimestamp: Date.now()
             });
         })
         .then(ref => {
