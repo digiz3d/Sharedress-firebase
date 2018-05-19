@@ -91,6 +91,15 @@ router.post('/', (req, res) => {
     return true;
 });
 
+router.delete('/:setId', (req, res) => {
+    sets.doc(req.params.setId).delete().then(() => {
+        return res.json({ success: true });
+    }).catch(err => {
+        console.warn(err);
+        return res.json({ error: true, message: 'Set not found' });
+    });
+    return true;
+});
 /*
 router.post('/', (req, res) => {
     new Promise((resolve, reject) => {
