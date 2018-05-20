@@ -82,4 +82,20 @@ router.post('/', (req, res) => {
     return true;
 });
 
+router.patch('/:imageId', (req, res) => {
+    new Promise((resolve, reject) => {
+        if (!req.body.tags) {
+            return reject(new Error('Tags can\'t be empty'));
+        }
+        return resolve();
+    }).then(() => {
+        return images.doc(req.params.imageId).update({ tags: req.body.tags });
+    }).then(ref => {
+        return res.json({ success: true });
+    }).catch(e => {
+        console.log('Error adding image : ' + e.message);
+        return res.json({ error: true, message: 'Image not found.' });
+    });
+    return true;
+});
 module.exports = router;
