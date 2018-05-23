@@ -28,6 +28,34 @@ router.get('/', (req, res) => {
     return true;
 });
 
+router.get('/mongodb', (req, res) => {
+    let output = '';
+
+    images.orderBy('creationTimestamp', 'desc').get()
+        .then(documents => {
+            documents.forEach(doc => {
+                let currentDoc = doc.data()
+                currentDoc._id = doc.id;
+                output += JSON.stringify(currentDoc) + "<br/>";
+                /*
+                docs[doc.id] = doc.data();
+                docs[doc.id].id = doc.id;
+                if (!docs[doc.id].url && docs[doc.id].storageId) {
+                    docs[doc.id].url = 'https://firebasestorage.googleapis.com/v0/b/sharedress-app.appspot.com/o/'
+                        + encodeURIComponent(docs[doc.id].storageId)
+                        + '?alt=media';
+                }
+                */
+            });
+            return res.send(output);
+        })
+        .catch(e => {
+            console.log('Error getting images', e.message);
+            //res.send('Error getting images');
+        });
+    return true;
+});
+
 router.get('/last', (req, res) => {
     let docs = {};
     images
